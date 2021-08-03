@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>generate</class>
+ <widget class="QWidget" name="generate">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>820</width>
+    <height>507</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>generate</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="2">
+    <widget class="QPushButton" name="deleteButton">
+     <property name="text">
+      <string>删除</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QPushButton" name="openButton">
+     <property name="text">
+      <string>导入</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <widget class="QPushButton" name="backButton">
+     <property name="text">
+      <string>返回</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="4">
+    <widget class="QTableView" name="tableView"/>
+   </item>
+   <item row="1" column="1">
+    <widget class="QPushButton" name="generateButton">
+     <property name="text">
+      <string>生成</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="4">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="tabletTracking">
+      <bool>false</bool>
+     </property>
+     <property name="focusPolicy">
+      <enum>Qt::TabFocus</enum>
+     </property>
+     <property name="title">
+      <string>添加选项</string>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <widget class="QCheckBox" name="checkBox_IFD0">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>202</y>
+        <width>47</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>IFD0</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_IFD1">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>290</y>
+        <width>47</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>IFD1</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_IOP">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>268</y>
+        <width>41</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>IOP</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_GPSIFD">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>246</y>
+        <width>59</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>GPSIFD</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_SubIFD">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>224</y>
+        <width>59</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>SubIFD</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_JFIF">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>50</y>
+        <width>71</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="focusPolicy">
+       <enum>Qt::NoFocus</enum>
+      </property>
+      <property name="text">
+       <string>JFIF</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_JFIF">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>121</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>JFIF编辑段</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_EXIF">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>180</y>
+        <width>121</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>EXIF编辑段</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="addButton">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>360</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>添加至列表</string>
+      </property>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>tableView</tabstop>
+  <tabstop>checkBox_JFIF</tabstop>
+  <tabstop>checkBox_IFD0</tabstop>
+  <tabstop>checkBox_SubIFD</tabstop>
+  <tabstop>checkBox_GPSIFD</tabstop>
+  <tabstop>checkBox_IOP</tabstop>
+  <tabstop>checkBox_IFD1</tabstop>
+  <tabstop>generateButton</tabstop>
+  <tabstop>deleteButton</tabstop>
+  <tabstop>backButton</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>generateButton</sender>
+   <signal>clicked()</signal>
+   <receiver>generate</receiver>
+   <slot>generateButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>325</x>
+     <y>497</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>360</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>backButton</sender>
+   <signal>clicked()</signal>
+   <receiver>generate</receiver>
+   <slot>backButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>648</x>
+     <y>497</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>587</x>
+     <y>365</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>deleteButton</sender>
+   <signal>clicked()</signal>
+   <receiver>generate</receiver>
+   <slot>deleteButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>487</x>
+     <y>497</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>461</x>
+     <y>366</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>addButton</sender>
+   <signal>clicked()</signal>
+   <receiver>generate</receiver>
+   <slot>addButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>779</x>
+     <y>461</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>697</x>
+     <y>483</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>openButton</sender>
+   <signal>clicked()</signal>
+   <receiver>generate</receiver>
+   <slot>openButton()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>127</x>
+     <y>497</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>158</x>
+     <y>364</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>generateButton()</slot>
+  <slot>backButton()</slot>
+  <slot>deleteButton()</slot>
+  <slot>addButton()</slot>
+  <slot>openButton()</slot>
+ </slots>
+</ui>
