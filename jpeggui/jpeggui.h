@@ -22,24 +22,20 @@ public:
 private:
     Ui::jpegguiClass ui;
     generate* gen;
-    QAxObject* m_pApplication;
-    QAxObject* m_pWorkBooks;
-    QAxObject* m_pWorkBook;
-    QAxObject* m_pSheets;
-    QAxObject* m_pSheet;
-    int m_totalRowCnt;
+    QAxObject* application;
+    QAxObject* workBooks;
+    QAxObject* workBook;
+    QAxObject* sheets;
+    QAxObject* sheet;
+    int rowCount;
 
 public:
-    void newCreateExl(const QString& fileName); //1.新建一个Excel
-    void appendSheet(const QString& sheetName); //2.增加1个Worksheet
-    void setCellVal(int row, int column, const QString& val);    //3.向Excel单元格中写入数据
-    void saveExl(const QString& fileName);      //4.保存Excel
-    void closeExl(const QString& fileName);     //5.关闭Excel
-    void freeExl();                             //6.释放Excel
-    void setSheetName(int itemIndex, const QString& sheetName); //7.设置sheet名称
-    int  getRowCount(void);         //得到行数
-    void openFile(QString strFile); //打开excel文件
-    void importExlToDbs(void);      //导入到数据库
+    void newCreateExl(const QString& fileName);  //新建一个Excel
+    void setCellVal(int row, int column, const QString& val);    //向Excel单元格中写入数据
+    void saveExl(const QString& fileName);      //保存Excel
+    void closeExl(const QString& fileName);     //关闭Excel
+    void freeExl();                             //释放Excel
+    int  getRowCount(void);         //得到Excel行数
 
 //槽函数
 private slots:

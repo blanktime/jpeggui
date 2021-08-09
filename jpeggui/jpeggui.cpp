@@ -17,11 +17,11 @@ jpeggui::jpeggui(QWidget *parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
-    m_pApplication = NULL;
-    m_pWorkBooks = NULL;
-    m_pWorkBook = NULL;
-    m_pSheets = NULL;
-    m_pSheet = NULL;
+    application = NULL;
+    workBooks = NULL;
+    workBook = NULL;
+    sheets = NULL;
+    sheet = NULL;
 }
 
 //打开文件
@@ -67,191 +67,72 @@ void generate::backButton() {
 
 void jpeggui::saveExl(const QString& fileName)
 {
-    if (m_pWorkBook != NULL) {
-        m_pWorkBook->dynamicCall("SaveAs(const QString &)", QDir::toNativeSeparators(fileName));
+    if (workBook != NULL) {
+        workBook->dynamicCall("SaveAs(const QString &)", QDir::toNativeSeparators(fileName));
     }
 }
 
 void jpeggui::closeExl(const QString& fileName)
 {
-    if (m_pWorkBook != NULL) {
-        m_pWorkBook->dynamicCall("Close(const QString &)", QDir::toNativeSeparators(fileName));
+    if (workBook != NULL) {
+        workBook->dynamicCall("Close(const QString &)", QDir::toNativeSeparators(fileName));
     }
 }
 
 void jpeggui::freeExl()
 {
-    if (m_pApplication != NULL) {
-        m_pApplication->dynamicCall("Quit()");
-        delete m_pApplication;
-        m_pApplication = NULL;
+    if (application != NULL) {
+        application->dynamicCall("Quit()");
+        delete application;
+        application = NULL;
     }
 }
 
 void jpeggui::newCreateExl(const QString& fileName)
 {
-    m_pApplication = new QAxObject(this);
-    m_pApplication->setControl("Excel.Application");//连接Exl控件
-    m_pApplication->dynamicCall("SetVisible(bool)", false);//false不显示窗体
-    m_pApplication->setProperty("DisplayAlerts", false);//不显示任何警告信息。
-    m_pWorkBooks = m_pApplication->querySubObject("Workbooks");
+    application = new QAxObject(this);
+    application->setControl("Excel.Application");//连接Exl控件
+    application->dynamicCall("SetVisible(bool)", false);//false不显示窗体
+    application->setProperty("DisplayAlerts", false);//不显示任何警告信息。
+    workBooks = application->querySubObject("Workbooks");
 
     QFile file(fileName);
     if (file.exists()) {
         qDebug("%s file exists\n", fileName.toStdString().c_str());
-        m_pWorkBook = m_pWorkBooks->querySubObject("Open(const QString &)", fileName);
+        workBook = workBooks->querySubObject("Open(const QString &)", fileName);
     }
     else {
         qDebug("%s file not exists\n", fileName.toStdString().c_str());
-        m_pWorkBooks->dynamicCall("Add");
-        m_pWorkBook = m_pApplication->querySubObject("ActiveWorkBook");
+        workBooks->dynamicCall("Add");
+        workBook = application->querySubObject("ActiveWorkBook");
     }
-    m_pSheets = m_pWorkBook->querySubObject("Sheets");
-    m_pSheet = m_pSheets->querySubObject("Item(int)", 1);
+    sheets = workBook->querySubObject("Sheets");
+    sheet = sheets->querySubObject("Item(int)", 1);
 }
 
-void jpeggui::appendSheet(const QString& sheetName)
-{
-    int nCount = m_pSheets->property("Count").toInt();
-    QAxObject* pLastSheet = m_pSheets->querySubObject("Item(int)", nCount);
-    m_pSheets->querySubObject("Add(QVariant)", pLastSheet->asVariant());
-    m_pSheet = m_pSheets->querySubObject("Item(int)", nCount);
-    pLastSheet->dynamicCall("Move(QVariant)", m_pSheet->asVariant());
-    m_pSheet->setProperty("Name", sheetName);
-}
 
 int jpeggui::getRowCount(void)
 {
-    QAxObject* range = m_pSheet->querySubObject("UsedRange"); //获取该sheet的使用范围对象
+    QAxObject* range = sheet->querySubObject("UsedRange"); //获取该sheet的使用范围对象
     QVariant var = range->dynamicCall("Value");
     delete range;
     QVariantList varRows = var.toList();  //得到表格中的所有数据
     if (varRows.isEmpty()) {
-        m_totalRowCnt = 0;
+        rowCount = 0;
         qDebug("varRows is empty\n");
         return 0;
     }
-    m_totalRowCnt = varRows.size();
-    qDebug("rowCount:%d\n", m_totalRowCnt);
-    return m_totalRowCnt;
+    rowCount = varRows.size();
+    qDebug("rowCount:%d\n", rowCount);
+    return rowCount;
 }
 
 void jpeggui::setCellVal(int row, int column, const QString& value)
 {
     row = (row < 1) ? 1 : row;
     column = (column < 1) ? 1 : column;
-    QAxObject* pRange = m_pSheet->querySubObject("Cells(int,int)", row, column);
+    QAxObject* pRange = sheet->querySubObject("Cells(int,int)", row, column);
     pRange->dynamicCall("Value", value);
-}
-
-void jpeggui::setSheetName(int itemIndex, const QString& sheetName)
-{
-    int nCount = m_pSheets->property("Count").toInt();
-    if (itemIndex <= nCount) {
-        QAxObject* pCurSheet = m_pSheets->querySubObject("Item(int)", itemIndex);
-        pCurSheet->setProperty("Name", sheetName);
-    }
-}
-void jpeggui::openFile(QString strFile)
-{
-    //1.获取Excel驱动，以及表格信息。
-    QAxObject Exl("Excel.Application");
-
-    Exl.setProperty("Visible", false); //不显示Exl界面，如果为true会看到启动的Exl界面
-
-    m_pWorkBooks = Exl.querySubObject("WorkBooks");
-
-    m_pWorkBooks->dynamicCall("Open (const QString&)", strFile);//打开指定文件
-
-    m_pWorkBook = Exl.querySubObject("ActiveWorkBook");
-
-    m_pSheets = m_pWorkBook->querySubObject("Sheets");//获取工作表
-
-    int nSheetCount = m_pSheets->property("Count").toInt();  //获取工作表的数目
-    qDebug("sheetCnt:%d\n", nSheetCount);
-
-    //2.分区域获取Exl表格中的内容，最后一定要关闭Excel文件，不然该文件会一直处于“只读”状态。代码如下：
-    if (nSheetCount > 0) {
-        int nSection = 20, nSectionEnd = 0, nRowEnd = 20;
-        QAxObject* pWorkSheet = m_pWorkBook->querySubObject("Sheets(int)", 1);//获取第一张表
-        QVariantList params;
-        QVariant varData;
-        for (int i = 1; i <= nRowEnd; i += nSection) {
-            nSectionEnd = i + nSection - 1;
-            if (nSectionEnd > nRowEnd) {
-                nSectionEnd = nRowEnd;
-            }
-            char cZimu = 1 + 64; //1-26分别代表A-Z，符合Excel表的列标识
-            //Ai至Ai+nSectionEnd的数据,这里为了测试一次是读取20条
-            params << QString("%1%2").arg(cZimu).arg(i) << QString("%1%2").arg(cZimu).arg(nSectionEnd);
-            QAxObject* pCell = pWorkSheet->querySubObject("Range(QVariant,QVariant)", params);
-            varData = pCell->dynamicCall("Value2()");
-            //qDebug() << varData;
-        }
-        //3.测试文档已经读出结果如图，可以发现我们读出的数据包含了三层外衣。前两层都是QVariantList。
-        //为了取出正确的数据，我们需要剥开这些外衣。
-        QVariantList varList = varData.toList(); //解除第一层List
-        if (varList.count() <= 0) {//防止内存溢出
-            qDebug("无数据！");
-            m_pWorkBooks->dynamicCall("Close()");
-            return;
-        }
-        QVariantList varLstData = varList[0].toList();
-        //解除第二层List
-        if (varLstData.count() <= 0) {
-            qDebug("无数据！");
-            m_pWorkBooks->dynamicCall("Close()");
-            return;
-        }
-        //判断数据类型，防止转化出错。
-        if (QString(varLstData[0].typeName()) == "QString") {
-            QString str = varLstData[0].toString(); //取出数据
-            qDebug("字符串：%s", str);
-        }
-
-        if (QString(varLstData[0].typeName()) == "double") {
-            double dData = varLstData[0].toDouble(); //取出数据
-            qDebug("%0.1f", dData); //注意，int型读出来也是double，所以一定要注意转化
-        }
-    }
-    m_pWorkBooks->dynamicCall("Close()");
-    m_pWorkBook = NULL;
-}
-
-void jpeggui::importExlToDbs(void)
-{
-    QString strFilePathName = QFileDialog::getOpenFileName(this, QStringLiteral("选择Excel文件"), "", tr("Exel file(*.xls *.xlsx *.xlsm)"));
-    if (strFilePathName.isNull()) {
-        return;
-    }
-    QAxObject* Exl = new QAxObject(this);	//连接Exl控件
-    if (Exl->setControl("Excel.Application")) {
-    }
-    else {
-        Exl->setControl("ket.Application");  //连接Exl控件
-    }
-    Exl->setProperty("Visible", false);  //不显示窗体
-    QAxObject* workbooks = Exl->querySubObject("WorkBooks");  //获取工作簿集合
-    workbooks->dynamicCall("Open(const QString&)", strFilePathName); //打开打开已存在的工作簿
-    QAxObject* workbook = Exl->querySubObject("ActiveWorkBook"); //获取当前工作簿
-    QAxObject* sheets = workbook->querySubObject("Sheets");  //获取工作表集合，Sheets也可换用WorkSheets
-    QAxObject* sheet = workbook->querySubObject("WorkSheets(int)", 1);//获取工作表集合的工作表1，即sheet1
-    QAxObject* range = sheet->querySubObject("UsedRange"); //获取该sheet的使用范围对象
-    QVariant var = range->dynamicCall("Value");
-    delete range;
-    QVariantList varRows = var.toList();  //得到表格中的所有数据
-    if (varRows.isEmpty()) {
-        return;
-    }
-    const int rowCount = varRows.size();
-    //qDebug("rowCount:%d\n", rowCount);
-    QStringList m_userid, m_card_id, m_action;
-    for (int i = 1; i < rowCount; ++i) {
-        QVariantList rowData = varRows[i].toList();
-        m_userid << rowData[0].toString();
-        m_card_id << rowData[1].toString();
-        m_action << rowData[2].toString();
-    }
 }
 
 struct my_error_mgr {
@@ -292,7 +173,7 @@ void jpeggui::openDirButton() {
     setCellVal(1, 9, QString("X Resolution"));
     setCellVal(1, 10, QString("Y Resolution"));
     setCellVal(1, 11, QString("Size"));
-    int CurLine = getRowCount();
+    int curLine = getRowCount();
     //遍历jpeg文件
     for (int i = 0; i < files.size(); ++i) {
 
@@ -325,18 +206,18 @@ void jpeggui::openDirButton() {
         jpeg_stdio_src(&cinfo, infile);
 
         (void)jpeg_read_header(&cinfo, TRUE);   
-        setCellVal(CurLine + 1, 1, files.at(i));
-        setCellVal(CurLine + 1, 2, QString::number(cinfo.is_baseline));
-        setCellVal(CurLine + 1, 3, QString::number(cinfo.data_precision));
-        setCellVal(CurLine + 1, 4, QString::number(cinfo.image_height));
-        setCellVal(CurLine + 1, 5, QString::number(cinfo.image_width));
-        setCellVal(CurLine + 1, 6, QString::number(cinfo.num_components));
-        setCellVal(CurLine + 1, 7, QString::number(cinfo.JFIF_major_version + cinfo.JFIF_minor_version * 0.1));
-        setCellVal(CurLine + 1, 8, QString::number(cinfo.density_unit));
-        setCellVal(CurLine + 1, 9, QString::number(cinfo.X_density));
-        setCellVal(CurLine + 1, 10, QString::number(cinfo.Y_density));
-        setCellVal(CurLine + 1, 11, QString::number(fsize));
-        CurLine += 1;
+        setCellVal(curLine + 1, 1, files.at(i));
+        setCellVal(curLine + 1, 2, QString::number(cinfo.is_baseline));
+        setCellVal(curLine + 1, 3, QString::number(cinfo.data_precision));
+        setCellVal(curLine + 1, 4, QString::number(cinfo.image_height));
+        setCellVal(curLine + 1, 5, QString::number(cinfo.image_width));
+        setCellVal(curLine + 1, 6, QString::number(cinfo.num_components));
+        setCellVal(curLine + 1, 7, QString::number(cinfo.JFIF_major_version + cinfo.JFIF_minor_version * 0.1));
+        setCellVal(curLine + 1, 8, QString::number(cinfo.density_unit));
+        setCellVal(curLine + 1, 9, QString::number(cinfo.X_density));
+        setCellVal(curLine + 1, 10, QString::number(cinfo.Y_density));
+        setCellVal(curLine + 1, 11, QString::number(fsize));
+        curLine += 1;
 
         jpeg_destroy_decompress(&cinfo);
         fclose(infile);
