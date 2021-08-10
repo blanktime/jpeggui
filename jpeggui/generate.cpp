@@ -15,10 +15,9 @@
 #include <assert.h>
 #include <time.h>
 
-extern "C" {
 #include "jpeglib.h"
 #include "libexif/exif-data.h"
-}
+
 
 QString jpeggui::filename;
 
@@ -1617,37 +1616,39 @@ void generate::generateButton()
             int hSize = heightarray.size();
 
             for (int i = 0; i < wSize; ++i) {
-                Sleep(10);
-                //复制新的一个Json文件
-                QJsonObject newJson = Json;
-                QJsonObject newobj = newJson.value("JFIF").toObject();
+                for (int j = 0; j < hSize; ++j) {
+                    Sleep(10);
+                    //复制新的一个Json文件
+                    QJsonObject newJson = Json;
+                    QJsonObject newobj = newJson.value("JFIF").toObject();
 
-                //更改对应值
-                newobj["Width"] = widtharray.at(i).toString();
-                newobj["Height"] = heightarray.at(i).toString();
-                //更新Json文件
-                newJson["JFIF"] = newobj;
+                    //更改对应值
+                    newobj["Width"] = widtharray.at(i).toString();
+                    newobj["Height"] = heightarray.at(j).toString();
+                    //更新Json文件
+                    newJson["JFIF"] = newobj;
 
-                newJson.insert("IFD0", QJsonValue(ifd0Object));
-                newJson.insert("IFD1", QJsonValue(ifd1Object));
-                newJson.insert("SubIFD", QJsonValue(subifdObject));
-                newJson.insert("GPSIFD", QJsonValue(gpsObject));
-                newJson.insert("IOP", QJsonValue(iopObject));
+                    newJson.insert("IFD0", QJsonValue(ifd0Object));
+                    newJson.insert("IFD1", QJsonValue(ifd1Object));
+                    newJson.insert("SubIFD", QJsonValue(subifdObject));
+                    newJson.insert("GPSIFD", QJsonValue(gpsObject));
+                    newJson.insert("IOP", QJsonValue(iopObject));
 
-                // 构建 Json 文档
-                QJsonDocument document;
-                document.setObject(newJson);
-                //保存为json文件
-                QFileInfo fileInfo(jpeggui::filename);
-                QString absFilePath = fileInfo.absolutePath() + "/" + QString::number(i + 1) + ".json";
-                QFile file(absFilePath);
+                    // 构建 Json 文档
+                    QJsonDocument document;
+                    document.setObject(newJson);
+                    //保存为json文件
+                    QFileInfo fileInfo(jpeggui::filename);
+                    QString absFilePath = fileInfo.absolutePath() + "/" + QString::number(i + 1) + ".json";
+                    QFile file(absFilePath);
 
-                if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-                {
-                    QMessageBox::warning(NULL, tr("Warning"), tr("File error!"), QMessageBox::Yes, QMessageBox::Yes);
+                    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+                    {
+                        QMessageBox::warning(NULL, tr("Warning"), tr("File error!"), QMessageBox::Yes, QMessageBox::Yes);
+                    }
+                    file.write(document.toJson());
+                    file.close();
                 }
-                file.write(document.toJson());
-                file.close();
             }
         }
         else {

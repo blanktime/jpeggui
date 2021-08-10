@@ -9,10 +9,9 @@
 #include <assert.h>
 #include <time.h>
 
-extern "C" {
 #include "jpeglib.h"
 #include "libexif/exif-data.h"
-}
+
 
 jpeggui::jpeggui(QWidget *parent)
     : QMainWindow(parent)
@@ -160,6 +159,10 @@ void jpeggui::openDirButton() {
     QStringList nameFilters;
     nameFilters << "*.jpg"<<"*jpeg";
     QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Time | QDir::Reversed);
+    //上层目录读取源文件路径和文件名
+    dir.cdUp();
+    QString srcDirPath= dir.absolutePath();
+    QStringList srcFiles = dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Time | QDir::Reversed);
 
     QString excelPath = dirPath + "/out.xlsx";
     newCreateExl(excelPath);
@@ -175,6 +178,7 @@ void jpeggui::openDirButton() {
     setCellVal(1, 10, QString("X Resolution"));
     setCellVal(1, 11, QString("Y Resolution"));
     setCellVal(1, 12, QString("Size"));
+    setCellVal(1, 13, QString("srcSize"));
     int curLine = getRowCount();
 
     static const unsigned int std_luminance_quant_tbl[64] = {
@@ -203,21 +207,30 @@ void jpeggui::openDirButton() {
     for (int i = 0; i < files.size(); ++i) {
 
         QString jpegPath = dirPath + "/" + files.at(i);
+        QString srcJpegPath = srcDirPath + "/" + srcFiles.at(i);
         JSAMPLE* image_buffer;       
         struct jpeg_decompress_struct cinfo;
         struct my_error_mgr jerr;    
-        FILE* infile;                
-        JSAMPARRAY buffer;           
-        int row_stride;              
+        FILE* infile;
+        FILE* srcInfile;                   
 
         if ((infile = fopen(jpegPath.toStdString().c_str(), "rb")) == NULL) {
             qDebug() << "can't open infile!\n";
             return ;
         }
 
+        if ((srcInfile = fopen(srcJpegPath.toStdString().c_str(), "rb")) == NULL) {
+            qDebug() << "can't open infile!\n";
+            return;
+        }
+        //发送后图像大小
         fseek(infile, 0, SEEK_END);
         unsigned int fsize = ftell(infile);
         fseek(infile, 0, SEEK_SET);
+        //发送前图像大小
+        fseek(srcInfile, 0, SEEK_END);
+        unsigned int srcFsize = ftell(srcInfile);
+        fseek(srcInfile, 0, SEEK_SET);
 
         cinfo.err = jpeg_std_error(&jerr.pub);
         jerr.pub.error_exit = my_error_exit;
@@ -274,6 +287,7 @@ void jpeggui::openDirButton() {
         setCellVal(curLine + 1, 10, QString::number(cinfo.X_density));
         setCellVal(curLine + 1, 11, QString::number(cinfo.Y_density));
         setCellVal(curLine + 1, 12, QString::number(fsize));
+        setCellVal(curLine + 1, 13, QString::number(srcFsize));
         curLine += 1;
 
         jpeg_destroy_decompress(&cinfo);
