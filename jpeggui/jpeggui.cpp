@@ -110,23 +110,6 @@ void jpeggui::newCreateExl(const QString& fileName)
     sheet = sheets->querySubObject("Item(int)", 1);
 }
 
-
-int jpeggui::getRowCount(void)
-{
-    QAxObject* range = sheet->querySubObject("UsedRange"); //获取该sheet的使用范围对象
-    QVariant var = range->dynamicCall("Value");
-    delete range;
-    QVariantList varRows = var.toList();  //得到表格中的所有数据
-    if (varRows.isEmpty()) {
-        rowCount = 0;
-        qDebug("varRows is empty\n");
-        return 0;
-    }
-    rowCount = varRows.size();
-    qDebug("rowCount:%d\n", rowCount);
-    return rowCount;
-}
-
 void jpeggui::setCellVal(int row, int column, const QString& value)
 {
     row = (row < 1) ? 1 : row;
@@ -179,7 +162,7 @@ void jpeggui::openDirButton() {
     setCellVal(1, 11, QString("Y Resolution"));
     setCellVal(1, 12, QString("Size"));
     setCellVal(1, 13, QString("srcSize"));
-    int curLine = getRowCount();
+    int curLine = 2;
 
     static const unsigned int std_luminance_quant_tbl[64] = {
         16, 11, 10, 16, 24, 40, 51, 61,
@@ -275,19 +258,19 @@ void jpeggui::openDirButton() {
                 }
             }
         }
-        setCellVal(curLine + 1, 1, files.at(i));
-        setCellVal(curLine + 1, 2, QString::number(cinfo.is_baseline));
-        setCellVal(curLine + 1, 3, QString::number(cinfo.data_precision));
-        setCellVal(curLine + 1, 4, QString::number(cinfo.image_height));
-        setCellVal(curLine + 1, 5, QString::number(cinfo.image_width));
-        setCellVal(curLine + 1, 6, QString::number(averQuality));
-        setCellVal(curLine + 1, 7, QString::number(cinfo.num_components));
-        setCellVal(curLine + 1, 8, QString::number(cinfo.JFIF_major_version + cinfo.JFIF_minor_version * 0.1));
-        setCellVal(curLine + 1, 9, QString::number(cinfo.density_unit));
-        setCellVal(curLine + 1, 10, QString::number(cinfo.X_density));
-        setCellVal(curLine + 1, 11, QString::number(cinfo.Y_density));
-        setCellVal(curLine + 1, 12, QString::number(fsize));
-        setCellVal(curLine + 1, 13, QString::number(srcFsize));
+        setCellVal(curLine, 1, files.at(i));
+        setCellVal(curLine, 2, QString::number(cinfo.is_baseline));
+        setCellVal(curLine, 3, QString::number(cinfo.data_precision));
+        setCellVal(curLine, 4, QString::number(cinfo.image_height));
+        setCellVal(curLine, 5, QString::number(cinfo.image_width));
+        setCellVal(curLine, 6, QString::number(averQuality));
+        setCellVal(curLine, 7, QString::number(cinfo.num_components));
+        setCellVal(curLine, 8, QString::number(cinfo.JFIF_major_version + cinfo.JFIF_minor_version * 0.1));
+        setCellVal(curLine, 9, QString::number(cinfo.density_unit));
+        setCellVal(curLine, 10, QString::number(cinfo.X_density));
+        setCellVal(curLine, 11, QString::number(cinfo.Y_density));
+        setCellVal(curLine, 12, QString::number(fsize));
+        setCellVal(curLine, 13, QString::number(srcFsize));
         curLine += 1;
 
         jpeg_destroy_decompress(&cinfo);
