@@ -56,7 +56,7 @@
    </property>
    <widget class="QMenu" name="menu">
     <property name="title">
-     <string>菜单</string>
+     <string>头文件参数批对比</string>
     </property>
     <addaction name="actionOpenDir"/>
    </widget>

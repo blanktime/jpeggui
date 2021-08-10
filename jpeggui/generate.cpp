@@ -1617,6 +1617,7 @@ void generate::generateButton()
             int hSize = heightarray.size();
 
             for (int i = 0; i < wSize; ++i) {
+                Sleep(10);
                 //复制新的一个Json文件
                 QJsonObject newJson = Json;
                 QJsonObject newobj = newJson.value("JFIF").toObject();
@@ -1645,7 +1646,6 @@ void generate::generateButton()
                 {
                     QMessageBox::warning(NULL, tr("Warning"), tr("File error!"), QMessageBox::Yes, QMessageBox::Yes);
                 }
-                //file.seek(0);
                 file.write(document.toJson());
                 file.close();
             }
