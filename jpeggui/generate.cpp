@@ -1639,7 +1639,7 @@ void generate::generateButton()
                     document.setObject(newJson);
                     //保存为json文件
                     QFileInfo fileInfo(jpeggui::filename);
-                    QString absFilePath = fileInfo.absolutePath() + "/" + QString::number(i + 1) + ".json";
+                    QString absFilePath = fileInfo.absolutePath() + '/' + QString::number(i + 1) + '_' + QString::number(j + 1) + ".json";
                     QFile file(absFilePath);
 
                     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -1702,7 +1702,7 @@ void generate::openButton()
         if (!JsonDoc.isNull() && (JsonError.error == QJsonParseError::NoError)) {  //没有报错则继续
             QJsonObject JsonObj = JsonDoc.object();
 
-            QString srcJpegPath = JsonDir + "/" + QString::number(i + 1) + ".jpg";
+            QString srcJpegPath = JsonPath + ".jpg";
 
             rw_jpeg_JFIF(JsonObj, srcJpegPath);
 
