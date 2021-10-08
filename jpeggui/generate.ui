@@ -20,21 +20,21 @@
    <item row="1" column="2">
     <widget class="QPushButton" name="deleteButton">
      <property name="text">
-      <string>删除</string>
+      <string>删除参数类目</string>
      </property>
     </widget>
    </item>
    <item row="1" column="0">
     <widget class="QPushButton" name="openButton">
      <property name="text">
-      <string>导入</string>
+      <string>导入Json文件生成JPEG</string>
      </property>
     </widget>
    </item>
    <item row="1" column="3">
     <widget class="QPushButton" name="backButton">
      <property name="text">
-      <string>返回</string>
+      <string>返回上一个界面</string>
      </property>
     </widget>
    </item>
@@ -44,7 +44,7 @@
    <item row="1" column="1">
     <widget class="QPushButton" name="generateButton">
      <property name="text">
-      <string>生成</string>
+      <string>生成Json文件</string>
      </property>
     </widget>
    </item>

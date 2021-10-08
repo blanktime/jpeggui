@@ -1,3 +1,4 @@
+//generate.cpp  次窗口功能实现
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "generate.h"
@@ -31,7 +32,6 @@ generate::generate(QWidget *parent)
     ui.tableView->setModel(model);
     ui.tableView->horizontalHeader()->setDefaultAlignment(Qt::AlignLeft);//设置左对齐
     ui.tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);//tableview表格自适应宽度
-    //ui.tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
     ui.tableView->setSelectionBehavior(QTableView::SelectRows);
 }
 

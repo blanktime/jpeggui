@@ -1,3 +1,5 @@
+//jpeggui.cpp  主窗口功能实现
+
 #include "jpeggui.h"
 #include <QString>
 #include <Windows.h>
@@ -140,7 +142,7 @@ void jpeggui::openDirButton() {
     }
     QDir dir(dirPath.toStdString().c_str());
     QStringList nameFilters;
-    nameFilters << "*.jpg"<<"*jpeg";
+    nameFilters << "*.jpg"<<"*.jpeg";
     QStringList files = dir.entryList(nameFilters, QDir::Files | QDir::Readable, QDir::Time | QDir::Reversed);
     //上层目录读取源文件路径和文件名
     dir.cdUp();
@@ -161,7 +163,7 @@ void jpeggui::openDirButton() {
     setCellVal(1, 10, QString("X Resolution"));
     setCellVal(1, 11, QString("Y Resolution"));
     setCellVal(1, 12, QString("Size"));
-    setCellVal(1, 13, QString("srcSize"));
+    //setCellVal(1, 13, QString("srcSize"));
     int curLine = 2;
 
     static const unsigned int std_luminance_quant_tbl[64] = {
@@ -175,45 +177,34 @@ void jpeggui::openDirButton() {
         72, 92, 95, 98, 112,100,103,99
     };
 
-    static const unsigned int std_chrominance_quant_tbl[64] = {
-        17, 18, 24, 47, 99, 99, 99, 99,
-        18, 21, 26, 66, 99, 99, 99, 99,
-        24, 26, 56, 99, 99, 99, 99, 99,
-        47, 66, 99, 99, 99, 99, 99, 99,
-        99, 99, 99, 99, 99, 99, 99, 99,
-        99, 99, 99, 99, 99, 99, 99, 99,
-        99, 99, 99, 99, 99, 99, 99, 99,
-        99, 99, 99, 99, 99, 99, 99, 99
-    };
-
     //遍历jpeg文件
     for (int i = 0; i < files.size(); ++i) {
 
         QString jpegPath = dirPath + "/" + files.at(i);
-        QString srcJpegPath = srcDirPath + "/" + srcFiles.at(i);
+        //QString srcJpegPath = srcDirPath + "/" + srcFiles.at(i);
         JSAMPLE* image_buffer;       
         struct jpeg_decompress_struct cinfo;
         struct my_error_mgr jerr;    
         FILE* infile;
-        FILE* srcInfile;                   
+        //FILE* srcInfile;                   
 
         if ((infile = fopen(jpegPath.toStdString().c_str(), "rb")) == NULL) {
-            qDebug() << "can't open infile!\n";
-            return ;
+            qDebug() << "can't open infile! id:" << i <<endl;
+            continue ;
         }
 
-        if ((srcInfile = fopen(srcJpegPath.toStdString().c_str(), "rb")) == NULL) {
-            qDebug() << "can't open infile!\n";
-            return;
-        }
+        /*if ((srcInfile = fopen(srcJpegPath.toStdString().c_str(), "rb")) == NULL) {
+            qDebug() << "can't open srcinfile! id:" << i <<endl;
+            continue ;
+        }*/
         //发送后图像大小
         fseek(infile, 0, SEEK_END);
         unsigned int fsize = ftell(infile);
-        fseek(infile, 0, SEEK_SET);
-        //发送前图像大小
-        fseek(srcInfile, 0, SEEK_END);
-        unsigned int srcFsize = ftell(srcInfile);
-        fseek(srcInfile, 0, SEEK_SET);
+        fseek(infile, 0, SEEK_SET); 
+        ////发送前图像大小
+        //fseek(srcInfile, 0, SEEK_END);
+        //unsigned int srcFsize = ftell(srcInfile);
+        //fseek(srcInfile, 0, SEEK_SET);
 
         cinfo.err = jpeg_std_error(&jerr.pub);
         jerr.pub.error_exit = my_error_exit;
@@ -270,7 +261,7 @@ void jpeggui::openDirButton() {
         setCellVal(curLine, 10, QString::number(cinfo.X_density));
         setCellVal(curLine, 11, QString::number(cinfo.Y_density));
         setCellVal(curLine, 12, QString::number(fsize));
-        setCellVal(curLine, 13, QString::number(srcFsize));
+        //setCellVal(curLine, 13, QString::number(srcFsize));
         curLine += 1;
 
         jpeg_destroy_decompress(&cinfo);

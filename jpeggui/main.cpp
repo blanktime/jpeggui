@@ -1,3 +1,5 @@
+//main.cpp
+
 #include "jpeggui.h"
 #include <QtWidgets/QApplication>
 

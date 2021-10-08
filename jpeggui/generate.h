@@ -1,3 +1,4 @@
+//generate.h 次窗口头文件
 #pragma once
 
 #include <QWidget>

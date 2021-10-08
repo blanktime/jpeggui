@@ -1,3 +1,4 @@
+//jpeggui.h 主窗口头文件
 #pragma once
 
 #include <QtWidgets/QMainWindow>
@@ -35,7 +36,6 @@ public:
     void saveExl(const QString& fileName);      //保存Excel
     void closeExl(const QString& fileName);     //关闭Excel
     void freeExl();                             //释放Excel
-    int  getRowCount(void);         //得到Excel行数
 
 //槽函数
 private slots:
